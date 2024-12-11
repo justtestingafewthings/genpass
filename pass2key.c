@@ -125,14 +125,15 @@ static int
 check_blob(blob_t *blob, uint8_t *passphrase)
 {
     int rv;
-    EVP_CIPHER_CTX ctx;
+    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
     uint8_t out[0x30];
     int outlen, tmplen;
-    EVP_CIPHER_CTX_init(&ctx);
-    EVP_DecryptInit_ex(&ctx, EVP_des_ede3_cbc(), NULL, passphrase, &passphrase[24]);
-    EVP_DecryptUpdate(&ctx, out, &outlen, blob->encrypted_keyblob, 0x30);
-    rv = EVP_DecryptFinal_ex(&ctx, out + outlen, &tmplen);
-    EVP_CIPHER_CTX_cleanup(&ctx);
+    EVP_CIPHER_CTX_init(ctx);
+    EVP_DecryptInit_ex(ctx, EVP_des_ede3_cbc(), NULL, passphrase, &passphrase[24]);
+    EVP_DecryptUpdate(ctx, out, &outlen, blob->encrypted_keyblob, 0x30);
+    rv = EVP_DecryptFinal_ex(ctx, out + outlen, &tmplen);
+    EVP_CIPHER_CTX_cleanup(ctx);
+    EVP_CIPHER_CTX_free(ctx);
     if (rv) {
         print_key("vfdecrypt key", out, 0x24);
         return 0;

@@ -1,2 +1,5 @@
-CFLAGS += -Wall -W -pedantic -O2 -Wno-deprecated-declarations
-LDLIBS = -lcrypto
+all:
+	gcc -o genpass pass2key.c -lcrypto
+
+clean:
+	rm -f genpass
